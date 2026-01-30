@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка... — KinoPlayer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --bg-card: #15151f;
+            --bg-glass: rgba(20, 20, 30, 0.8);
+
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+
+            --accent-primary: #e50914;
+            --accent-secondary: #ff4d5a;
+            --accent-gold: #f5c518;
+            --accent-purple: #8b5cf6;
+
+            --gradient-primary: linear-gradient(135deg, #e50914 0%, #b20710 100%);
+            --gradient-gold: linear-gradient(135deg, #f5c518 0%, #d4a50a 100%);
+            --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+
+            --border-radius: 16px;
+            --border-radius-sm: 10px;
+            --border-radius-lg: 24px;
+
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 60px rgba(229, 9, 20, 0.4);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(10, 10, 15, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.5));
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 40px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-tertiary);
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.2);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 28px;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        /* Main */
+        .main {
+            padding-top: 72px;
+            min-height: 100vh;
+        }
+
+        /* Loading */
+        .loading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 16px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Movie Hero with Backdrop */
+        .movie-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(30px) saturate(1.2);
+        }
+
+        .movie-backdrop::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                    rgba(10, 10, 15, 0.3) 0%,
+                    rgba(10, 10, 15, 0.8) 50%,
+                    rgba(10, 10, 15, 1) 100%);
+        }
+
+        /* Movie Content */
+        .movie-content {
+            position: relative;
+            padding: 40px 0 60px;
+        }
+
+        .movie-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 48px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .movie-layout {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        /* Poster */
+        .movie-poster-wrap {
+            position: relative;
+        }
+
+        .movie-poster {
+            position: sticky;
+            top: 100px;
+        }
+
+        .poster-image {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.5s, box-shadow 0.5s;
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02) translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .poster-placeholder {
+            width: 100%;
+            aspect-ratio: 2/3;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            border-radius: var(--border-radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+        }
+
+        .rating-badge {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: var(--gradient-gold);
+            color: #000;
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: 800;
+            box-shadow: 0 8px 24px rgba(245, 197, 24, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .rating-value {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .rating-label {
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        /* Movie Details */
+        .movie-details {
+            padding-top: 20px;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            animation: fadeIn 0.5s ease-out backwards;
+        }
+
+        .badge:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .badge:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .badge:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .badge:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge-quality {
+            background: var(--gradient-gold);
+            color: #000;
+        }
+
+        .badge-year {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .badge-age {
+            background: rgba(229, 9, 20, 0.2);
+            color: var(--accent-secondary);
+            border: 1px solid rgba(229, 9, 20, 0.3);
+        }
+
+        .badge-imdb {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        .movie-title {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeIn 0.5s ease-out 0.1s backwards;
+        }
+
+        .movie-original-title {
+            color: var(--text-muted);
+            font-size: 18px;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .movie-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 28px;
+            padding: 20px 24px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .meta-icon {
+            font-size: 20px;
+        }
+
+        .movie-description {
+            color: var(--text-secondary);
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 32px;
+            max-width: 700px;
+        }
+
+        .movie-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .btn-watch {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 18px 40px;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 30px rgba(229, 9, 20, 0.4);
+        }
+
+        .btn-watch:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 12px 40px rgba(229, 9, 20, 0.5);
+        }
+
+        .btn-watch svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .btn-kinopoisk {
+            background: linear-gradient(135deg, #ff6b00 0%, #ff4500 100%);
+            color: white;
+        }
+
+        /* Player Section */
+        .player-section {
+            margin-top: 20px;
+            padding: 40px 0 80px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .title-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius-sm);
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+        }
+
+        .player-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border-radius: var(--border-radius-sm);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+        }
+
+        .player-wrapper {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .player-container {
+            position: relative;
+            padding-top: 56.25%;
+            background: #000;
+        }
+
+        .player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .player-id {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .id-badge {
+            background: var(--bg-tertiary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .player-hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 24px 0;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Error State */
+        .error-container {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .error-title {
+            font-size: 28px;
+            color: var(--accent-primary);
+            margin-bottom: 12px;
+        }
+
+        .error-text {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .movie-title {
+                font-size: 32px;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .poster-image,
+            .poster-placeholder {
+                max-width: 240px;
+                margin: 0 auto;
+            }
+
+            .movie-poster {
+                position: relative;
+                top: 0;
+            }
+
+            .player-tabs {
+                width: 100%;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Backdrop (will be set by JS) -->
+    <div class="movie-backdrop" id="movieBackdrop"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">KinoPlayer</span>
+            </a>
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Поиск фильмов или вставь ID...">
+            </div>
+            <div>
+                <a href="/" class="btn btn-secondary">← На главную</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" id="mainContent">
+        <div class="container">
+            <div class="loading-container" id="loadingState">
+                <div class="spinner"></div>
+                <p class="loading-text">Загружаем информацию о фильме...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🎬</span>
+                    <span class="logo-text">KinoPlayer</span>
+                </div>
+                <p class="footer-text">Данные с Кинопоиска • Автоматический плеер</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Get movie ID from URL
+        const pathParts = window.location.pathname.split('/');
+        const movieId = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+
+        // Player URLs
+        const playerUrls = {
+            1: (id) => `https://flcksbr.top/film/${id}/`,
+            2: (id) => `https://voidboost.tv/embed/${id}`,
+            3: (id) => `https://kinobase.org/embed/${id}`
+        };
+
+        let currentPlayer = 1;
+
+        async function loadMovie() {
+            if (!movieId || isNaN(movieId)) {
+                showError('Неверный ID фильма');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/movie/${movieId}`);
+                const data = await response.json();
+
+                if (data.success && data.movie) {
+                    renderMovie(data.movie);
+                } else {
+                    // Show player even without API data
+                    renderMovie({
+                        id: movieId,
+                        title: `Фильм #${movieId}`,
+                        playerUrl: `https://flcksbr.top/film/${movieId}/`
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                renderMovie({
+                    id: movieId,
+                    title: `Фильм #${movieId}`,
+                    playerUrl: `https://flcksbr.top/film/${movieId}/`
+                });
+            }
+        }
+
+        function renderMovie(movie) {
+            document.title = `${movie.title} — KinoPlayer`;
+
+            // Set backdrop
+            if (movie.poster) {
+                document.getElementById('movieBackdrop').style.backgroundImage = `url(${movie.poster})`;
+            }
+
+            const html = `
+                <div class="movie-content">
+                    <div class="movie-layout">
+                        <!-- Poster -->
+                        <div class="movie-poster-wrap">
+                            <div class="movie-poster">
+                                ${movie.poster
+                    ? `<img src="${movie.poster}" alt="${movie.title}" class="poster-image" onerror="this.outerHTML='<div class=\\'poster-placeholder\\'>🎬</div>'">`
+                    : '<div class="poster-placeholder">🎬</div>'
+                }
+                                ${movie.rating ? `
+                                <div class="rating-badge">
+                                    <span class="rating-value">${movie.rating}</span>
+                                    <span class="rating-label">КП</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="movie-details">
+                            <div class="badges">
+                                ${movie.year ? `<span class="badge badge-year">${movie.year}</span>` : ''}
+                                ${movie.ageRating && movie.ageRating !== 'undefined+' ? `<span class="badge badge-age">${movie.ageRating}</span>` : ''}
+                                ${movie.ratingImdb ? `<span class="badge badge-imdb">IMDb ${movie.ratingImdb}</span>` : ''}
+                                ${movie.type === 'TV_SERIES' ? '<span class="badge badge-year">Сериал</span>' : ''}
+                            </div>
+
+                            <h1 class="movie-title">${movie.title}</h1>
+                            ${movie.originalTitle ? `<p class="movie-original-title">${movie.originalTitle}</p>` : ''}
+
+                            <div class="movie-meta">
+                                ${movie.genres ? `<div class="meta-item"><span class="meta-icon">🎭</span> ${movie.genres}</div>` : ''}
+                                ${movie.duration ? `<div class="meta-item"><span class="meta-icon">⏱️</span> ${movie.duration} мин</div>` : ''}
+                                ${movie.countries ? `<div class="meta-item"><span class="meta-icon">🌍</span> ${movie.countries}</div>` : ''}
+                            </div>
+
+                            ${movie.description ? `<p class="movie-description">${movie.description}</p>` : ''}
+
+                            <div class="movie-actions">
+                                <a href="#player" class="btn btn-watch">
+                                    <svg fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                    Смотреть онлайн
+                                </a>
+                                <a href="https://www.kinopoisk.ru/film/${movie.id}/" target="_blank" class="btn btn-secondary btn-kinopoisk">
+                                    🍿 Кинопоиск
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player -->
+                <section id="player" class="player-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="title-icon">▶</span>
+                            Смотреть онлайн
+                        </h2>
+                        <div class="player-tabs">
+                            <button class="tab-btn active" onclick="switchPlayer(1)">Плеер 1</button>
+                            <button class="tab-btn" onclick="switchPlayer(2)">Плеер 2</button>
+                            <button class="tab-btn" onclick="switchPlayer(3)">Резерв</button>
+                        </div>
+                    </div>
+
+                    <div class="player-wrapper">
+                        <div class="player-container">
+                            <iframe 
+                                id="playerFrame"
+                                src="${movie.playerUrl || playerUrls[1](movie.id)}"
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                            ></iframe>
+                        </div>
+                        <div class="player-info">
+                            <div class="player-id">
+                                ID фильма: <span class="id-badge">${movie.id}</span>
+                            </div>
+                            <div class="player-hint">
+                                💡 Не загружается? Попробуйте другой плеер
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+
+            document.getElementById('mainContent').innerHTML = `<div class="container">${html}</div>`;
+        }
+
+        function switchPlayer(num) {
+            currentPlayer = num;
+            const frame = document.getElementById('playerFrame');
+            if (frame) {
+                frame.src = playerUrls[num](movieId);
+            }
+
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === num - 1);
+            });
+        }
+
+        function showError(message) {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="container">
+                    <div class="error-container">
+                        <div class="error-icon">😔</div>
+                        <h2 class="error-title">${message}</h2>
+                        <p class="error-text">Попробуйте поискать другой фильм или проверьте ID</p>
+                        <a href="/" class="btn btn-primary">← На главную</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Search handler
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    const idMatch = query.match(/(\d{5,})/);
+                    if (idMatch) {
+                        window.location.href = `/film/${idMatch[1]}`;
+                    } else {
+                        window.location.href = `/?search=${encodeURIComponent(query)}`;
+                    }
+                }
+            }
+        });
+
+        // Load movie on start
+        loadMovie();
+    </script>
+</body>
+
+</html>

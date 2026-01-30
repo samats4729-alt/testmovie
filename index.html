@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KinoPlayer — Смотреть фильмы онлайн</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 60px;
+            text-align: center;
+            background: radial-gradient(ellipse at center top, rgba(229, 9, 20, 0.15) 0%, transparent 60%);
+        }
+
+        .hero-title {
+            font-size: 52px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0b0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        /* Search Box */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+            background: var(--bg-tertiary);
+            padding: 8px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            color: white;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-submit {
+            background: var(--gradient-primary);
+            border: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .search-submit:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .search-hints {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .hint-tag {
+            background: var(--bg-tertiary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .hint-tag:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        /* Quick Access */
+        .quick-access {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .quick-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-secondary);
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quick-input input {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 14px;
+            width: 140px;
+            outline: none;
+        }
+
+        .quick-input button {
+            background: var(--accent-primary);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Results */
+        .search-results {
+            padding: 40px 0;
+        }
+
+        .results-title {
+            margin-bottom: 24px;
+        }
+
+        /* Loading */
+        .loading-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .skeleton-card {
+            aspect-ratio: 2/3;
+            background: linear-gradient(110deg, var(--bg-tertiary) 8%, var(--bg-card) 18%, var(--bg-tertiary) 33%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s linear infinite;
+            border-radius: var(--border-radius);
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position-x: -200%;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">KinoPlayer</span>
+            </a>
+            <nav class="nav">
+                <a href="/" class="nav-link">Главная</a>
+                <a href="#top-movies" class="nav-link">Топ фильмов</a>
+                <a href="#how-it-works" class="nav-link">Как работает</a>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="document.getElementById('searchInput').focus()">
+                    🔍 Поиск
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1 class="hero-title">Смотри фильмы с Кинопоиска</h1>
+                <p class="hero-subtitle">
+                    Введи название или ID с Кинопоиска — плеер подставится автоматически
+                </p>
+
+                <!-- Search Form -->
+                <div class="search-container">
+                    <form class="search-form" id="searchForm">
+                        <input type="text" id="searchInput" class="search-input"
+                            placeholder="Название фильма или ID с Кинопоиска..." autocomplete="off">
+                        <button type="submit" class="search-submit">Найти</button>
+                    </form>
+
+                    <div class="search-hints">
+                        <span class="hint-tag" data-query="Интерстеллар">Интерстеллар</span>
+                        <span class="hint-tag" data-query="Начало">Начало</span>
+                        <span class="hint-tag" data-query="Джокер">Джокер</span>
+                        <span class="hint-tag" data-query="Дюна 2">Дюна 2</span>
+                    </div>
+                </div>
+
+                <!-- Quick ID Access -->
+                <div class="quick-access">
+                    <div class="quick-input">
+                        <span>🎬</span>
+                        <input type="text" id="directIdInput" placeholder="ID фильма...">
+                        <button onclick="goToMovie()">Открыть</button>
+                    </div>
+                    <div class="quick-input">
+                        <span>🔗</span>
+                        <input type="text" id="kinopoiskUrlInput" placeholder="kinopoisk.ru/film/...">
+                        <button onclick="parseKinopoiskUrl()">Парсить</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Results -->
+        <section class="search-results container" id="searchResults" style="display: none;">
+            <h2 class="section-title results-title">
+                <span class="title-icon">🔍</span>
+                <span id="resultsTitle">Результаты поиска</span>
+            </h2>
+            <div class="movies-grid" id="resultsGrid"></div>
+        </section>
+
+        <!-- Top Movies -->
+        <section id="top-movies" class="related-section container">
+            <h2 class="section-title">
+                <span class="title-icon">🔥</span>
+                Топ фильмов
+            </h2>
+            <div class="movies-grid" id="topMoviesGrid">
+                <!-- Loading skeletons -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section id="how-it-works" class="related-section container">
+            <h2 class="section-title">
+                <span class="title-icon">💡</span>
+                Как это работает
+            </h2>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 24px;">
+                <div
+                    style="background: var(--bg-secondary); padding: 24px; border-radius: var(--border-radius); border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size: 32px; margin-bottom: 12px;">1️⃣</div>
+                    <h3 style="margin-bottom: 8px;">Найди фильм</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        Введи название фильма или вставь ссылку с Кинопоиска
+                    </p>
+                </div>
+                <div
+                    style="background: var(--bg-secondary); padding: 24px; border-radius: var(--border-radius); border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size: 32px; margin-bottom: 12px;">2️⃣</div>
+                    <h3 style="margin-bottom: 8px;">Парсим данные</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        Мы автоматически получаем инфо о фильме: постер, описание, рейтинг
+                    </p>
+                </div>
+                <div
+                    style="background: var(--bg-secondary); padding: 24px; border-radius: var(--border-radius); border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size: 32px; margin-bottom: 12px;">3️⃣</div>
+                    <h3 style="margin-bottom: 8px;">Смотри онлайн</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        Плеер подставляется автоматически по ID фильма с Кинопоиска
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🎬</span>
+                    <span class="logo-text">KinoPlayer</span>
+                </div>
+                <p class="footer-text">Парсер Кинопоиска + Автоплеер</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Загрузка топ фильмов
+        async function loadTopMovies() {
+            try {
+                const response = await fetch('/api/top');
+                const data = await response.json();
+
+                if (data.success && data.movies.length > 0) {
+                    renderMovies(data.movies, 'topMoviesGrid');
+                } else {
+                    // Показываем заглушки если API недоступен
+                    showFallbackMovies();
+                }
+            } catch (error) {
+                console.error('Error loading top movies:', error);
+                showFallbackMovies();
+            }
+        }
+
+        // Заглушка если API недоступен
+        function showFallbackMovies() {
+            const fallback = [
+                { id: 447301, title: 'Джокер', year: 2019, rating: 8.4 },
+                { id: 258687, title: 'Интерстеллар', year: 2014, rating: 8.6 },
+                { id: 447301, title: 'Начало', year: 2010, rating: 8.7 },
+                { id: 1143242, title: 'Дюна 2', year: 2024, rating: 8.2 },
+            ];
+            renderMovies(fallback, 'topMoviesGrid');
+        }
+
+        // Рендер карточек фильмов
+        function renderMovies(movies, containerId) {
+            const container = document.getElementById(containerId);
+
+            container.innerHTML = movies.map(movie => `
+                <a href="/film/${movie.id}" class="movie-card" style="text-decoration: none;">
+                    <div class="card-poster">
+                        ${movie.poster
+                    ? `<img src="${movie.poster}" alt="${movie.title}" onerror="this.parentElement.style.background='var(--bg-tertiary)'">`
+                    : `<div style="width:100%;height:100%;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:48px;">🎬</div>`
+                }
+                        <div class="card-overlay">
+                            <button class="card-play">▶</button>
+                        </div>
+                        ${movie.rating ? `<span class="card-rating">${movie.rating}</span>` : ''}
+                    </div>
+                    <h3 class="card-title">${movie.title}</h3>
+                    <p class="card-meta">${movie.year || ''} ${movie.genres ? '• ' + movie.genres : ''}</p>
+                </a>
+            `).join('');
+        }
+
+        // Поиск фильмов
+        async function searchMovies(query) {
+            document.getElementById('searchResults').style.display = 'block';
+            document.getElementById('resultsTitle').textContent = `Ищем "${query}"...`;
+            document.getElementById('resultsGrid').innerHTML = `
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            `;
+
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                document.getElementById('resultsTitle').textContent = `Результаты: "${query}"`;
+
+                if (data.success && data.movies.length > 0) {
+                    renderMovies(data.movies, 'resultsGrid');
+                } else {
+                    document.getElementById('resultsGrid').innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <p>😔 Ничего не найдено</p>
+                            <p style="font-size: 14px; margin-top: 8px;">Попробуйте другой запрос или введите ID напрямую</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('resultsGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <p>⚠️ Ошибка поиска</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Переход к фильму по ID
+        function goToMovie() {
+            const id = document.getElementById('directIdInput').value.trim();
+            if (id && !isNaN(id)) {
+                window.location.href = `/film/${id}`;
+            }
+        }
+
+        // Парсинг URL Кинопоиска
+        function parseKinopoiskUrl() {
+            const url = document.getElementById('kinopoiskUrlInput').value.trim();
+            const match = url.match(/film\/(\d+)/);
+            if (match) {
+                window.location.href = `/film/${match[1]}`;
+            } else {
+                alert('Не удалось распознать ID фильма в ссылке');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                // Проверяем не ID ли это
+                const idMatch = query.match(/(\d{5,})/);
+                if (idMatch) {
+                    window.location.href = `/film/${idMatch[1]}`;
+                } else {
+                    searchMovies(query);
+                }
+            }
+        });
+
+        // Подсказки
+        document.querySelectorAll('.hint-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                document.getElementById('searchInput').value = tag.dataset.query;
+                searchMovies(tag.dataset.query);
+            });
+        });
+
+        // Enter в полях ID
+        document.getElementById('directIdInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') goToMovie();
+        });
+        document.getElementById('kinopoiskUrlInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') parseKinopoiskUrl();
+        });
+
+        // Проверка параметра search в URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('search');
+        if (searchQuery) {
+            document.getElementById('searchInput').value = searchQuery;
+            searchMovies(searchQuery);
+        }
+
+        // Загружаем топ при старте
+        loadTopMovies();
+    </script>
+</body>
+
+</html>

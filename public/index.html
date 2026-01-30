@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINEMATIC — Премиум кинотеатр | Смотреть фильмы онлайн бесплатно</title>
+    <meta name="description"
+        content="CINEMATIC — ваш персональный онлайн-кинотеатр. Смотрите новинки кино, популярные сериалы и классику мирового кинематографа в высоком качестве 4K и без рекламы.">
+    <meta name="keywords"
+        content="фильмы онлайн, смотреть кино, сериалы онлайн, новинки кино 2024, смотреть бесплатно, 4K фильмы, HD качество, без регистрации">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://cinematic.site/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cinematic.site/">
+    <meta property="og:title" content="CINEMATIC — Премиум кинотеатр | Смотреть фильмы онлайн">
+    <meta property="og:description"
+        content="Смотрите новинки кино и сериалы в премиум качестве 4K. Ежедневные обновления, отличный звук и отсутствие навязчивой рекламы.">
+    <meta property="og:image" content="https://cinematic.site/assets/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://cinematic.site/">
+    <meta property="twitter:title" content="CINEMATIC — Премиум кинотеатр">
+    <meta property="twitter:description" content="Смотрите новинки кино и сериалы в премиум качестве 4K.">
+    <meta property="twitter:image" content="https://cinematic.site/assets/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "CINEMATIC",
+        "url": "https://cinematic.site/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://cinematic.site/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-noise"></div>
+        <div class="bg-glow glow-1"></div>
+        <div class="bg-glow glow-2"></div>
+        <div class="bg-glow glow-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="url(#logoGrad)" stroke-width="2" />
+                        <path d="M16 14L28 20L16 26V14Z" fill="url(#logoGrad)" />
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFD700" />
+                                <stop offset="100%" stop-color="#FF6B00" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="logo-text">CINEMATIC</span>
+            </a>
+
+            <nav class="nav">
+                <a href="/" class="nav-link active">Главная</a>
+                <a href="/movies" class="nav-link">Фильмы</a>
+                <a href="/series" class="nav-link">Сериалы</a>
+                <a href="/new" class="nav-link">Новинки</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="online-counter" id="onlineCounter" title="Сейчас на сайте">
+                    <span class="online-dot"></span>
+                    <span class="online-count" id="onlineCount">0</span>
+                    <span class="online-label">онлайн</span>
+                </div>
+                <button class="search-toggle" id="searchToggle">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="10" cy="10" r="7" />
+                        <path d="M15 15L20 20" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Overlay -->
+        <div class="search-overlay" id="searchOverlay">
+            <div class="search-container">
+                <div class="search-input-wrap">
+                    <svg class="search-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21L16.65 16.65" />
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Поиск фильмов, сериалов..."
+                        autocomplete="off">
+                    <button class="search-close" id="searchClose">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- Hero Marquee Section -->
+        <section class="hero-marquee">
+            <div class="marquee-content">
+                <div class="marquee-text">
+                    <div class="hero-badge">
+                        <span class="badge-icon">🔥</span>
+                        <span>Рекомендуем сегодня</span>
+                    </div>
+                    <h1 class="marquee-title">Смотрите лучшие фильмы</h1>
+                    <p class="marquee-subtitle">Тысячи фильмов и сериалов в HD качестве</p>
+                    <a href="/movies" class="btn btn-watch">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        Смотреть каталог
+                    </a>
+                </div>
+            </div>
+
+            <!-- Auto-scrolling movie strip -->
+            <div class="movie-marquee" id="movieMarquee">
+                <div class="marquee-track" id="marqueeTrack">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Categories -->
+        <section class="categories">
+            <div class="container">
+                <div class="categories-scroll">
+                    <a href="/movies" class="category-chip active">
+                        <span class="chip-icon">🎬</span> Все фильмы
+                    </a>
+                    <a href="/category/action" class="category-chip">
+                        <span class="chip-icon">💥</span> Боевики
+                    </a>
+                    <a href="/category/drama" class="category-chip">
+                        <span class="chip-icon">🎭</span> Драмы
+                    </a>
+                    <a href="/category/comedy" class="category-chip">
+                        <span class="chip-icon">😂</span> Комедии
+                    </a>
+                    <a href="/category/horror" class="category-chip">
+                        <span class="chip-icon">👻</span> Ужасы
+                    </a>
+                    <a href="/category/scifi" class="category-chip">
+                        <span class="chip-icon">🚀</span> Фантастика
+                    </a>
+                    <a href="/category/thriller" class="category-chip">
+                        <span class="chip-icon">😱</span> Триллеры
+                    </a>
+                    <a href="/category/fantasy" class="category-chip">
+                        <span class="chip-icon">🧙</span> Фэнтези
+                    </a>
+                    <a href="/category/romance" class="category-chip">
+                        <span class="chip-icon">💕</span> Мелодрамы
+                    </a>
+                    <a href="/category/animation" class="category-chip">
+                        <span class="chip-icon">🎨</span> Мультфильмы
+                    </a>
+                    <a href="/category/crime" class="category-chip">
+                        <span class="chip-icon">🔫</span> Криминал
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trending Section -->
+        <section class="section" id="movies">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-accent"></span>
+                        Популярное сейчас
+                    </h2>
+                    <a href="/movies" class="section-link">
+                        Смотреть все
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 12L10 8L6 4" />
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="movies-slider" id="trendingMovies">
+                    <!-- Loading skeletons -->
+                    <div class="movie-card skeleton"></div>
+                    <div class="movie-card skeleton"></div>
+                    <div class="movie-card skeleton"></div>
+                    <div class="movie-card skeleton"></div>
+                    <div class="movie-card skeleton"></div>
+                    <div class="movie-card skeleton"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Rated Section -->
+        <section class="section section-alt">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-accent gold"></span>
+                        Лучшие по рейтингу
+                    </h2>
+                    <a href="/movies" class="section-link">
+                        Все фильмы
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 12L10 8L6 4" />
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="movies-grid" id="topRatedMovies">
+                    <!-- Will be filled by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="26" height="18" rx="2" />
+                                <path d="M12 21v6M20 21v6M8 27h16" />
+                            </svg>
+                        </div>
+                        <h3>4K Ultra HD</h3>
+                        <p>Кристально чистое качество с HDR поддержкой</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <h3>Без рекламы</h3>
+                        <p>Непрерывный просмотр без отвлечений</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                                <path d="M12 6v6l4 2" />
+                            </svg>
+                        </div>
+                        <h3>Мгновенный доступ</h3>
+                        <p>Смотрите в любой момент на любом устройстве</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            </svg>
+                        </div>
+                        <h3>Субтитры</h3>
+                        <p>Многоязычные субтитры для всего контента</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="/" class="logo">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 40 40" fill="none">
+                                <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="url(#logoGrad2)"
+                                    stroke-width="2" />
+                                <path d="M16 14L28 20L16 26V14Z" fill="url(#logoGrad2)" />
+                                <defs>
+                                    <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#FFD700" />
+                                        <stop offset="100%" stop-color="#FF6B00" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <span class="logo-text">CINEMATIC</span>
+                    </a>
+                    <p class="footer-tagline">Премиальный кинотеатр нового поколения</p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Каталог</h4>
+                        <a href="/movies">Фильмы</a>
+                        <a href="/series">Сериалы</a>
+                        <a href="/category/animation">Мультфильмы</a>
+                        <a href="/new">Новинки</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Помощь</h4>
+                        <a href="#">FAQ</a>
+                        <a href="#">Контакты</a>
+                        <a href="#">Подписка</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Соцсети</h4>
+                        <a href="#">Telegram</a>
+                        <a href="#">VK</a>
+                        <a href="#">YouTube</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 CINEMATIC. Все права защищены. Весь видеоконтент взят из открытых источников.</p>
+                <div class="footer-legal" style="margin-top: 10px; font-size: 11px; opacity: 0.5;">
+                    <a href="/dmca.html" style="color: inherit; text-decoration: none;">DMCA / Правообладателям</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+
+</html>

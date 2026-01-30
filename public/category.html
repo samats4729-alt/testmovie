@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог — CINEMATIC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .category-page {
+            min-height: 100vh;
+            padding-top: calc(var(--header-height) + 40px);
+            padding-bottom: 60px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, #d0d0d0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding: 8px 0;
+            scrollbar-width: none;
+        }
+
+        .filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chip {
+            padding: 12px 24px;
+            border-radius: 50px;
+            background: var(--bg-glass);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+        }
+
+        .filter-chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .filter-chip.active {
+            background: var(--gradient-premium);
+            color: #000;
+            border-color: transparent;
+        }
+
+        .movies-grid-large {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 32px;
+        }
+
+        .loading-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 32px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .empty-text {
+            color: var(--text-muted);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent-gold);
+        }
+
+        .breadcrumb span {
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-current {
+            color: var(--text-primary) !important;
+        }
+
+        /* Расширенные фильтры */
+        .advanced-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding: 20px;
+            background: var(--bg-glass);
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select {
+            padding: 12px 36px 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            min-width: 140px;
+        }
+
+        .filter-select:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+
+        .filter-select option {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Responsive для страницы категорий */
+        @media (max-width: 768px) {
+            .category-page {
+                padding-top: calc(var(--header-height) + 20px);
+                padding-bottom: 40px;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+
+            .page-subtitle {
+                font-size: 14px;
+            }
+
+            .advanced-filters {
+                flex-direction: column;
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .movies-grid-large {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 16px;
+            }
+
+            .breadcrumb {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 26px;
+            }
+
+            .movies-grid-large {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 12px;
+            }
+
+            .filter-bar {
+                gap: 8px;
+            }
+
+            .filter-chip {
+                padding: 10px 16px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-noise"></div>
+        <div class="bg-glow glow-1"></div>
+        <div class="bg-glow glow-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="url(#logoGrad)" stroke-width="2" />
+                        <path d="M16 14L28 20L16 26V14Z" fill="url(#logoGrad)" />
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFD700" />
+                                <stop offset="100%" stop-color="#FF6B00" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="logo-text">CINEMATIC</span>
+            </a>
+
+            <nav class="nav">
+                <a href="/" class="nav-link">Главная</a>
+                <a href="/movies" class="nav-link">Фильмы</a>
+                <a href="/series" class="nav-link">Сериалы</a>
+                <a href="/new" class="nav-link">Новинки</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="online-counter" id="onlineCounter" title="Сейчас на сайте">
+                    <span class="online-dot"></span>
+                    <span class="online-count" id="onlineCount">0</span>
+                    <span class="online-label">онлайн</span>
+                </div>
+                <a href="/" class="btn btn-info">← Назад</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="category-page">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="/">Главная</a>
+                <span>›</span>
+                <span class="breadcrumb-current" id="breadcrumbCurrent">Каталог</span>
+            </nav>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title" id="pageTitle">Загрузка...</h1>
+                <p class="page-subtitle" id="pageSubtitle"></p>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar" id="filterBar">
+                <a href="/movies" class="filter-chip" data-type="all">🎬 Все фильмы</a>
+                <a href="/category/action" class="filter-chip" data-type="action">💥 Боевики</a>
+                <a href="/category/drama" class="filter-chip" data-type="drama">🎭 Драмы</a>
+                <a href="/category/comedy" class="filter-chip" data-type="comedy">😂 Комедии</a>
+                <a href="/category/horror" class="filter-chip" data-type="horror">👻 Ужасы</a>
+                <a href="/category/scifi" class="filter-chip" data-type="scifi">🚀 Фантастика</a>
+                <a href="/category/thriller" class="filter-chip" data-type="thriller">😱 Триллеры</a>
+                <a href="/category/fantasy" class="filter-chip" data-type="fantasy">🧙 Фэнтези</a>
+                <a href="/category/romance" class="filter-chip" data-type="romance">💕 Мелодрамы</a>
+                <a href="/category/animation" class="filter-chip" data-type="animation">🎨 Мультфильмы</a>
+                <a href="/category/crime" class="filter-chip" data-type="crime">🔫 Криминал</a>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="advanced-filters" id="advancedFilters">
+                <div class="filter-group">
+                    <label class="filter-label">Год</label>
+                    <select class="filter-select" id="filterYear">
+                        <option value="">Все годы</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                        <option value="2018">2018</option>
+                        <option value="2010-2017">2010-2017</option>
+                        <option value="2000-2009">2000-2009</option>
+                        <option value="1990-1999">90-е</option>
+                        <option value="classic">Классика</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Сортировка</label>
+                    <select class="filter-select" id="filterSort">
+                        <option value="rating">По рейтингу</option>
+                        <option value="year">По году</option>
+                        <option value="votes">По популярности</option>
+                        <option value="title">По названию</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Страна</label>
+                    <select class="filter-select" id="filterCountry">
+                        <option value="">Все страны</option>
+                        <option value="США">США</option>
+                        <option value="Россия">Россия</option>
+                        <option value="Великобритания">Великобритания</option>
+                        <option value="Франция">Франция</option>
+                        <option value="Германия">Германия</option>
+                        <option value="Корея">Корея</option>
+                        <option value="Япония">Япония</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Movies Grid -->
+            <div class="movies-grid-large" id="moviesGrid">
+                <!-- Loading skeletons -->
+                <div class="movie-card skeleton">
+                    <div class="card-poster"></div>
+                </div>
+                <div class="movie-card skeleton">
+                    <div class="card-poster"></div>
+                </div>
+                <div class="movie-card skeleton">
+                    <div class="card-poster"></div>
+                </div>
+                <div class="movie-card skeleton">
+                    <div class="card-poster"></div>
+                </div>
+                <div class="movie-card skeleton">
+                    <div class="card-poster"></div>
+                </div>
+                <div class="movie-card skeleton">
+                    <div class="card-poster"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border: none; padding: 0;">
+                <p>&copy; 2024 CINEMATIC. Премиум кинотеатр.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Названия категорий
+        const CATEGORY_NAMES = {
+            'movies': { title: 'Фильмы', subtitle: 'Лучшие фильмы в HD качестве', genre: '' },
+            'series': { title: 'Сериалы', subtitle: 'Популярные сериалы', type: 'TV_SERIES' },
+            'new': { title: 'Новинки', subtitle: 'Свежие релизы', year: '2025' },
+            'action': { title: 'Боевики', subtitle: 'Экшн и адреналин', genre: 'action' },
+            'drama': { title: 'Драмы', subtitle: 'Глубокие истории', genre: 'drama' },
+            'comedy': { title: 'Комедии', subtitle: 'Лучшие комедии', genre: 'comedy' },
+            'horror': { title: 'Ужасы', subtitle: 'Страшное кино', genre: 'horror' },
+            'scifi': { title: 'Фантастика', subtitle: 'Космос и технологии', genre: 'scifi' },
+            'thriller': { title: 'Триллеры', subtitle: 'Напряжение до конца', genre: 'thriller' },
+            'fantasy': { title: 'Фэнтези', subtitle: 'Магия и приключения', genre: 'fantasy' },
+            'romance': { title: 'Мелодрамы', subtitle: 'Истории о любви', genre: 'romance' },
+            'animation': { title: 'Мультфильмы', subtitle: 'Анимация для всех', genre: 'animation' },
+            'crime': { title: 'Криминал', subtitle: 'Детективы и криминал', genre: 'crime' }
+        };
+
+        // Состояние
+        let currentPage = 1;
+        let totalPages = 1;
+        let hasMore = false;
+        let isLoading = false;
+        let currentCategory = 'movies';
+
+        // Текущие фильтры
+        let currentFilters = {
+            genre: '',
+            year: '',
+            country: '',
+            sort: 'RATING',
+            type: 'FILM'
+        };
+
+        // Определяем текущую категорию
+        function getCurrentCategory() {
+            const path = window.location.pathname;
+
+            if (path.startsWith('/category/')) {
+                return path.split('/')[2];
+            }
+            if (path === '/movies') return 'movies';
+            if (path === '/series') return 'series';
+            if (path === '/new') return 'new';
+
+            return 'movies';
+        }
+
+        // Загрузка и отображение
+        async function loadCategory() {
+            currentCategory = getCurrentCategory();
+            const info = CATEGORY_NAMES[currentCategory] || CATEGORY_NAMES['movies'];
+
+            // Устанавливаем базовые фильтры из категории
+            currentFilters.genre = info.genre || '';
+            currentFilters.year = info.year || '';
+            currentFilters.type = info.type || 'FILM';
+
+            // Обновляем заголовки
+            document.title = `${info.title} — CINEMATIC`;
+            document.getElementById('pageTitle').textContent = info.title;
+            document.getElementById('pageSubtitle').textContent = info.subtitle;
+            document.getElementById('breadcrumbCurrent').textContent = info.title;
+
+            // Подсвечиваем активный фильтр
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                const type = chip.dataset.type;
+                if (type === currentCategory || (currentCategory === 'movies' && type === 'all')) {
+                    chip.classList.add('active');
+                }
+            });
+
+            // Подсвечиваем навигацию
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === window.location.pathname ||
+                    (href === '/movies' && window.location.pathname.startsWith('/category'))) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Сбрасываем и загружаем
+            currentPage = 1;
+            allLoadedMovies = [];
+            document.getElementById('moviesGrid').innerHTML = '';
+
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (loadMoreBtn) loadMoreBtn.remove();
+
+            await loadMore();
+        }
+
+        // Построить URL с фильтрами
+        function buildApiUrl() {
+            const params = new URLSearchParams();
+            params.set('page', currentPage);
+
+            if (currentFilters.genre) params.set('genre', currentFilters.genre);
+            if (currentFilters.year) params.set('year', currentFilters.year);
+            if (currentFilters.country) params.set('country', currentFilters.country);
+            if (currentFilters.sort) params.set('sort', currentFilters.sort);
+            if (currentFilters.type) params.set('type', currentFilters.type);
+
+            return `/api/films?${params.toString()}`;
+        }
+
+        // Загрузить ещё
+        async function loadMore() {
+            if (isLoading) return;
+            isLoading = true;
+
+            const grid = document.getElementById('moviesGrid');
+
+            // Показываем загрузку
+            if (currentPage === 1) {
+                grid.innerHTML = `
+                    <div class="movie-card skeleton"><div class="card-poster"></div></div>
+                    <div class="movie-card skeleton"><div class="card-poster"></div></div>
+                    <div class="movie-card skeleton"><div class="card-poster"></div></div>
+                    <div class="movie-card skeleton"><div class="card-poster"></div></div>
+                    <div class="movie-card skeleton"><div class="card-poster"></div></div>
+                    <div class="movie-card skeleton"><div class="card-poster"></div></div>
+                `;
+            }
+
+            try {
+                const apiUrl = buildApiUrl();
+                console.log('Fetching:', apiUrl);
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.success && data.movies && data.movies.length > 0) {
+                    // Убираем скелетоны при первой загрузке
+                    if (currentPage === 1) {
+                        grid.innerHTML = '';
+                    }
+
+                    // Добавляем фильмы
+                    appendMovies(data.movies);
+
+                    // Обновляем состояние пагинации
+                    totalPages = data.totalPages || 1;
+                    hasMore = data.hasMore !== false && currentPage < totalPages;
+
+                    // Обновляем кнопку
+                    updateLoadMoreButton();
+
+                    currentPage++;
+                } else if (currentPage === 1) {
+                    showEmpty();
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                if (currentPage === 1) {
+                    showEmpty();
+                }
+            }
+
+            isLoading = false;
+        }
+
+        // Добавить фильмы в сетку
+        function appendMovies(movies) {
+            const grid = document.getElementById('moviesGrid');
+
+            const html = movies.map(movie => {
+                const genres = movie.genres
+                    ? (Array.isArray(movie.genres) ? movie.genres.slice(0, 2).join(', ') : movie.genres)
+                    : '';
+
+                return `
+                    <a href="/watch/${movie.id}" class="movie-card">
+                        <div class="card-poster">
+                            ${movie.poster
+                        ? `<img src="${movie.poster}" alt="${movie.title}" loading="lazy" 
+                                    onerror="this.style.display='none'">`
+                        : '<div style="width:100%;height:100%;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:48px;">🎬</div>'
+                    }
+                            <div class="card-overlay">
+                                <button class="card-play">▶</button>
+                            </div>
+                            ${movie.rating ? `<span class="card-rating">${movie.rating}</span>` : ''}
+                            <span class="card-quality">HD</span>
+                        </div>
+                        <h3 class="card-title">${movie.title}</h3>
+                        <p class="card-meta">${movie.year || ''} ${genres ? '• ' + genres : ''}</p>
+                    </a>
+                `;
+            }).join('');
+
+            grid.insertAdjacentHTML('beforeend', html);
+        }
+
+        // Обновить кнопку "Загрузить ещё"
+        function updateLoadMoreButton() {
+            let btn = document.getElementById('loadMoreBtn');
+            const container = document.querySelector('.category-page .container');
+            const loadedCount = allLoadedMovies.length;
+
+            if (hasMore) {
+                if (!btn) {
+                    btn = document.createElement('div');
+                    btn.id = 'loadMoreBtn';
+                    btn.style.cssText = 'text-align: center; margin-top: 48px;';
+                    container.appendChild(btn);
+                }
+                btn.innerHTML = `
+                    <button onclick="loadMore()" class="btn btn-watch" style="padding: 16px 48px;">
+                        Загрузить ещё
+                    </button>
+                    <p style="color: var(--text-muted); margin-top: 16px; font-size: 14px;">
+                        Загружено: ${loadedCount} фильмов
+                    </p>
+                `;
+                btn.style.display = 'block';
+            } else if (btn) {
+                if (loadedCount > 0) {
+                    btn.innerHTML = `
+                        <p style="color: var(--text-muted); margin-top: 32px; font-size: 14px;">
+                            Загружено: ${loadedCount} фильмов
+                        </p>
+                    `;
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        }
+
+        // Пустое состояние
+        function showEmpty() {
+            document.getElementById('moviesGrid').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🎬</div>
+                    <h3 class="empty-title">Пока ничего нет</h3>
+                    <p class="empty-text">Попробуйте другую категорию</p>
+                </div>
+            `;
+        }
+
+        // Бесконечный скролл (опционально)
+        window.addEventListener('scroll', () => {
+            if (isLoading || !hasMore) return;
+
+            const scrollBottom = window.innerHeight + window.scrollY;
+            const docHeight = document.documentElement.offsetHeight;
+
+            if (scrollBottom >= docHeight - 500) {
+                loadMore();
+            }
+        });
+
+        // Обработка расширенных фильтров
+        let allLoadedMovies = [];
+
+        function initAdvancedFilters() {
+            const yearFilter = document.getElementById('filterYear');
+            const sortFilter = document.getElementById('filterSort');
+            const countryFilter = document.getElementById('filterCountry');
+
+            [yearFilter, sortFilter, countryFilter].forEach(filter => {
+                if (filter) {
+                    filter.addEventListener('change', applyFilters);
+                }
+            });
+        }
+
+        // Применить фильтры — перезагружаем с сервера
+        async function applyFilters() {
+            const year = document.getElementById('filterYear')?.value || '';
+            const sort = document.getElementById('filterSort')?.value || 'RATING';
+            const country = document.getElementById('filterCountry')?.value || '';
+
+            // Мапим сортировку для API
+            const sortMap = {
+                'rating': 'RATING',
+                'year': 'YEAR',
+                'votes': 'NUM_VOTE',
+                'title': 'RATING'
+            };
+
+            // Обновляем фильтры (год добавляется к текущему жанру из категории)
+            if (year) currentFilters.year = year;
+            currentFilters.sort = sortMap[sort] || 'RATING';
+            if (country) currentFilters.country = country;
+
+            // Перезагружаем с новыми параметрами
+            currentPage = 1;
+            allLoadedMovies = [];
+
+            const grid = document.getElementById('moviesGrid');
+            grid.innerHTML = '';
+
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (loadMoreBtn) loadMoreBtn.remove();
+
+            await loadMore();
+
+            // Обновляем подзаголовок
+            let subtitle = 'Фильтры: ';
+            if (currentFilters.genre) subtitle += CATEGORY_NAMES[currentFilters.genre]?.title || currentFilters.genre;
+            if (year) subtitle += `, ${year}`;
+            if (country) subtitle += `, ${country}`;
+            document.getElementById('pageSubtitle').textContent = subtitle;
+        }
+
+        // Сбросить фильтры
+        function resetFilters() {
+            document.getElementById('filterYear').value = '';
+            document.getElementById('filterSort').value = 'rating';
+            document.getElementById('filterCountry').value = '';
+
+            const info = CATEGORY_NAMES[currentCategory] || CATEGORY_NAMES['movies'];
+            currentFilters.year = info.year || '';
+            currentFilters.country = '';
+            currentFilters.sort = 'RATING';
+
+            currentPage = 1;
+            allLoadedMovies = [];
+
+            loadCategory();
+        }
+
+        // Модифицируем appendMovies для сохранения фильмов
+        const originalAppendMovies = appendMovies;
+        appendMovies = function (movies) {
+            allLoadedMovies = [...allLoadedMovies, ...movies];
+            originalAppendMovies(movies);
+        };
+
+        // Инициализация
+        initAdvancedFilters();
+
+        // Запуск
+        loadCategory();
+
+        // ========== ONLINE COUNTER ==========
+        let onlineSessionId = localStorage.getItem('cinematic_session');
+        if (!onlineSessionId) {
+            onlineSessionId = 'user_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+            localStorage.setItem('cinematic_session', onlineSessionId);
+        }
+
+        async function sendOnlineHeartbeat() {
+            try {
+                const res = await fetch('/api/online/heartbeat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId: onlineSessionId })
+                });
+                const data = await res.json();
+                const el = document.getElementById('onlineCount');
+                if (el) el.textContent = data.online;
+            } catch (e) { }
+        }
+
+        sendOnlineHeartbeat();
+        setInterval(sendOnlineHeartbeat, 30000);
+    </script>
+</body>
+
+</html>
