@@ -788,12 +788,13 @@
                     </div>
 
                     <div class="player-wrapper">
-                        <div class="player-container">
+                        <div class="player-container" style="z-index: 10;">
                             <iframe 
                                 id="playerFrame"
                                 src="${playerSources[currentSource](movie.id)}"
                                 allowfullscreen
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                                style="pointer-events: auto; z-index: 20; position: absolute;"
                             ></iframe>
                         </div>
                         <div class="player-footer">
