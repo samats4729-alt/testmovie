@@ -1262,6 +1262,23 @@ body {
         display: none;
     }
 
+    .player-help {
+        font-size: 12px;
+    }
+
+    /* FIX: Mobile Player Interaction Bug */
+    .player-wrapper {
+        border-radius: 0 !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    .player-container {
+        height: 100vh !important;
+        border-radius: 0 !important;
+    }
+
     .logo-text {
         font-size: 18px;
         letter-spacing: 2px;
